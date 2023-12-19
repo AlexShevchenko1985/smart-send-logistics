@@ -26,10 +26,6 @@ jobs:
       - name: Start MySQL Service
         run: sudo /etc/init.d/mysql start
 
-      - name: Change MySQL Password
-        run: |
-          sudo mysql -e "USE mysql; UPDATE user SET authentication_string='' WHERE user='root'; FLUSH PRIVILEGES;"
-      
       - name: Set up PHP and WP-CLI
         uses: shivammathur/setup-php@v2
         with:
