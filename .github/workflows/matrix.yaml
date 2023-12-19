@@ -37,11 +37,7 @@ jobs:
         run: composer install
 
       - name: Install WP Tests
-        run: bash bin/install-wp-tests.sh wordpress_test root '' localhost
-          --dbuser=root
-          --dbpass=''
-          --dbname=wordpress_test
-          --dbhost=localhost
+        run: bash bin/install-wp-tests.sh wordpress_test root test localhost
 
       - name: Run tests
         run: ./vendor/bin/phpunit
