@@ -7,7 +7,7 @@ fi
 
 DB_NAME=$1
 DB_USER=$2
-DB_PASS=$3
+DB_PASS=root
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
