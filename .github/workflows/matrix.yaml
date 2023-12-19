@@ -11,8 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        wordpress_version: [6.4, 6.3]
-        php_version: [8.3, 8.2, 8.1]
+        wordpress_version: [6.4]
+        php_version: [8.3]
 
     name: PHP ${{ matrix.php_version }} Test on ${{ matrix.wordpress_version}}
 
@@ -29,3 +29,15 @@ jobs:
         with:
           php-version: ${{ matrix.php_version }}
           extensions: mbstring, zip, intl
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Install WP Tests
+        run: bash bin/install-wp-tests.sh wordpress_test root '' localhost
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
