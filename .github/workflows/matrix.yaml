@@ -23,3 +23,12 @@ jobs:
         with:
           php-version: ${{ matrix.php_version }}
           extensions: mbstring, zip, intl
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit
