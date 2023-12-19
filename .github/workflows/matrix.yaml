@@ -23,21 +23,12 @@ jobs:
       - name: Install MySQL
         run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
 
-      - name: Stop MySQL Service
-        run: sudo /etc/init.d/mysql stop
-
-      - name: Start MySQL in Safe Mode
-        run: sudo mysqld_safe --skip-grant-tables &
-
-      - name: Sleep to Allow MySQL to Start
-        run: sleep 5
+      - name: Start MySQL Service
+        run: sudo /etc/init.d/mysql start
 
       - name: Change MySQL Password
         run: |
           sudo mysql -e "USE mysql; UPDATE user SET authentication_string='' WHERE user='root'; FLUSH PRIVILEGES;"
-
-      - name: Stop MySQL Safe Mode
-        run: sudo pkill mysqld_safe
       
       - name: Set up PHP and WP-CLI
         uses: shivammathur/setup-php@v2
