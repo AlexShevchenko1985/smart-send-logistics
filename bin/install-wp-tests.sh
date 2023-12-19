@@ -140,7 +140,7 @@ recreate_db() {
 }
 
 create_db() {
-	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
+  mysqladmin create wordpress_test --user=root --password=root --host=localhost --protocol=tcp
 }
 
 install_db() {
