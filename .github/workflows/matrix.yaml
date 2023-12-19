@@ -26,9 +26,13 @@ jobs:
       - name: Start MySQL Service
         run: sudo /etc/init.d/mysql start
 
-      - name: Remove MySQL Password
+      - name: Create MySQL User
         run: |
-          sudo mysql -uroot -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
+          sudo mysql -uroot -e "CREATE USER 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+
+      - name: Change MySQL Password
+        run: |
+          sudo mysql -u admin -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
       
       - name: Set up PHP and WP-CLI
         uses: shivammathur/setup-php@v2
