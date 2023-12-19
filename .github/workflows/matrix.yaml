@@ -37,7 +37,7 @@ jobs:
         run: composer install
 
       - name: Install WP Tests
-        run: bash bin/install-wp-tests.sh wordpress_test root localhost
+        run: bash bin/install-wp-tests.sh wordpress_test root ss localhost
 
       - name: Run tests
         run: ./vendor/bin/phpunit
