@@ -1,64 +1,33 @@
-name: Test
+name: CI
 
-on: push
+on: [push]
 
 jobs:
-  phpcs:
-    name: PHP Coding Standards
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
-          coverage: none
-      - name: Install Composer dependencies
-        uses: "ramsey/composer-install@v2"
-  phpstan:
-    name: PHPStan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
-          coverage: none
-  phpunit:
-    name: PHPUnit
-    runs-on: ubuntu-latest
+  run:
+    runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        php: ['8.2']
+        operating-system: [ubuntu-latest]
+        php-versions: ['8.3']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
-          coverage: none
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set Composer version
-        run: composer self-update --2.2
-      - name: Install Composer dependencies
-        uses: "ramsey/composer-install@v2"
-      - name: Setup tests
-        run: bash tests/bin/install-wp-tests.sh
-      - name: Setup PHP ${{ matrix.php }}
-        # https://github.com/shivammathur/setup-php/issues/446#issuecomment-824001225
-        uses: shivammathur/setup-php@develop
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
-          coverage: none
-          tools: none
-      - name: PHPUnit
-        env:
-          WP_DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
-        run: composer test
+          php-version: ${{ matrix.php-versions }}
+
+
+      - name: Check PHP Version
+        run: php -v
+
+      - name: Composer install
+        run: composer install --optimize-autoloader --prefer-dist
+
+      - name: Install WP Tests
+        run: bash bin/install-wp-tests.sh wordpress_test root root localhost latest
+
+      - name: phpunit tests
+        run: ./vendor/bin/phpunit
