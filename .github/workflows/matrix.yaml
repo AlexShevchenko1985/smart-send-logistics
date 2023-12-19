@@ -1,62 +1,33 @@
-name: WordPress and PHP Matrix Testing
+name: CI
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
+  run:
+    runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        wordpress_version: [6.4]
-        php_version: [8.3]
-
-    name: PHP ${{ matrix.php_version }} Test on ${{ matrix.wordpress_version}}
-
+        operating-system: [ubuntu-latest]
+        php-versions: ['8.3']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install MySQL
-        run: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
-
-      - name: Start MySQL Service
-        run: sudo /etc/init.d/mysql start
-
-      - name: Stop MySQL Service
-        run: sudo /etc/init.d/mysql stop
-
-      - name: Start MySQL in Safe Mode
-        run: sudo mysqld --skip-grant-tables &
-
-      - name: Sleep to Allow MySQL to Start
-        run: sleep 5
-
-      - name: Change MySQL Password
-        run: |
-          sudo mysql -e "USE mysql; UPDATE user SET authentication_string='' WHERE user='root'; FLUSH PRIVILEGES;"
-
-      - name: Stop MySQL Safe Mode
-        run: sudo pkill mysqld
-      
-
-      - name: Set up PHP and WP-CLI
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php_version }}
-          extensions: mbstring, zip, intl
+          php-version: ${{ matrix.php-versions }}
+
 
       - name: Check PHP Version
         run: php -v
 
-      - name: Install Composer dependencies
-        run: composer install
+      - name: Composer install
+        run: composer install --optimize-autoloader --prefer-dist
 
       - name: Install WP Tests
-        run: bash bin/install-wp-tests.sh wordpress_test root '1' localhost
+        run: bash bin/install-wp-tests.sh wordpress_test root root localhost latest
 
-      - name: Run tests
+      - name: phpunit tests
         run: ./vendor/bin/phpunit
